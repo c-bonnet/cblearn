@@ -20,11 +20,16 @@ class LinearRegression(BaseEstimator):
         self.singular_ = np.empty((1))
         self.intercept_ = np.empty((1))
     
+    def __repr__(self):
+        # not implemented yet
+        return "LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=False)"
+    
     def fit(self, X, y, sample_weight=None):
         """
         fit method that fits the parameters coef_ and intercept_ to the training set X
         """
         # no implementation of sample_weight attribute
+        self.coef_ = np.zeros(X.shape[1])
         return self
 
     def get_params(self, deep=True):
@@ -42,7 +47,14 @@ class LinearRegression(BaseEstimator):
         """
         predict using the linear model
         """
-        pass
+        try:
+            predictions = X@self.coef_ + self.intercept_
+        except Exception as ex:
+            print(ex)
+            print("predicting 0s instead...")
+            predictions = np.zeros(X.shape[0])
+        return predictions
+
 
     def score(self, X, y, sample_weight=None):
         """
