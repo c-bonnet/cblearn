@@ -54,7 +54,7 @@ class LinearRegression(BaseEstimator):
             predictions = X@self.coef_ + self.intercept_
         except Exception as ex:
             print(ex)
-            print("predicting 0s instead...")
+            print("Error while predicting, thus predicting 0s instead...")
             predictions = np.zeros(X.shape[0])
         return predictions
 
