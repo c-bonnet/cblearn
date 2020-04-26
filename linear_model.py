@@ -40,7 +40,6 @@ class LinearRegression(BaseEstimator):
         """
         get parameters for this estimator
         """
-        # no implementation of deep attribute
         return dict([["copy_X", self.copy_X],
                      ["fit_intercept", self.fit_intercept],
                      ["n_jobs", self.n_jobs],
