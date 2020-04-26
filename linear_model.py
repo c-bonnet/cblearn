@@ -32,19 +32,32 @@ class LinearRegression(BaseEstimator):
         fit method that fits the parameters coef_ and intercept_ to the training set X
         """
         # no implementation of sample_weight attribute
-        self.coef_ = np.zeros((X.shape[1],1))
+        m,n = X.shape
+        self.coef_ = np.zeros((n,1))
         self.intercept_ = 0
 
         # Batch Gradient Descent
-        m,n = X.shape
-        costs = []
-        for _ in range(num_iterations):
-            J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
-            costs.append(J)
-            grad_coef = 2/m * np.sum(X.T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
-            grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
-            self.coef_ -= learning_rate*grad_coef
-            self.intercept_ -= learning_rate*grad_intercept
+        if optimiser="BGD":
+            self.costs_ = []
+            for _ in range(num_iterations):
+                grad_coef = 2/m * np.sum(X.T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
+                grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
+                self.coef_ -= learning_rate*grad_coef
+                self.intercept_ -= learning_rate*grad_intercept
+                J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
+                self.costs_.append(J)
+                
+        # Stochastic Gradient Descent
+        if optimiser="SGD":
+            self.costs_ = []
+            for _ in range(num_iterations):
+                i = np.random.randint(m)
+                grad_coef = 2 * np.sum(X[i].T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
+                grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
+                self.coef_ -= learning_rate*grad_coef
+                self.intercept_ -= learning_rate*grad_intercept
+                J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
+                self.costs_.append(J)
 
         return self
 
