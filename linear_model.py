@@ -6,23 +6,23 @@ class LinearRegression(BaseEstimator):
     """
     Estimator that can compute linear regression
     """
-    def __init__(self, fit_intercept=True, normalise=False, copy_X=True, n_jobs=None):
+    def __init__(self, copy_X=True, fit_intercept=True, n_jobs=None, normalise=False):
         
         # intialise parameters
-        self.fit_intercept=fit_intercept
-        self.normalise=normalise
         self.copy_X=copy_X
+        self.fit_intercept=fit_intercept
         self.n_jobs=n_jobs
+        self.normalise=normalise
         
         # initialise attributes
         self.coef_ = np.empty((1))
         self.rank_ = 0
         self.singular_ = np.empty((1))
-        self.intercept_ = np.empty((1))
+        self.intercept_ = 0
     
     def __repr__(self):
         # not implemented yet
-        return "LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=False)"
+        return f"LinearRegression(copy_X={self.copy_X}, fit_intercept={self.fit_intercept}, n_jobs={self.n_jobs}, normalise={self.normalise})"
     
     def fit(self, X, y, sample_weight=None):
         """
@@ -30,6 +30,7 @@ class LinearRegression(BaseEstimator):
         """
         # no implementation of sample_weight attribute
         self.coef_ = np.zeros(X.shape[1])
+        self.intercept_ = 0
         return self
 
     def get_params(self, deep=True):
@@ -37,10 +38,10 @@ class LinearRegression(BaseEstimator):
         get parameters for this estimator
         """
         # no implementation of deep attribute
-        return dict([["coef", self.coef_],
-                     ["intercept", self.intercept_],
-                     ["rank", self.rank_],
-                     ["singular", self.singular_],
+        return dict([["copy_X", self.copy_X],
+                     ["fit_intercept", self.fit_intercept],
+                     ["n_jobs", self.n_jobs],
+                     ["normalise", self.normalise],
                      ])
 
     def predict(self, X):
@@ -66,3 +67,12 @@ class LinearRegression(BaseEstimator):
         """
         set the parameters of this estimator
         """
+        for key, value in params.items():
+            setattr(self, key, value)
+        return self
+
+# for testing purposes
+if __name__=="__main__":
+    from sklearn import linear_model 
+    lin_reg_cb = LinearRegression()
+    lin_reg_sk = linear_model.LinearRegression()
