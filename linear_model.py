@@ -7,13 +7,11 @@ class LinearRegression(BaseEstimator):
     Estimator that can compute linear regression
     """
     def __init__(self, copy_X=True, fit_intercept=True, n_jobs=None, normalise=False):
-        
         # intialise parameters
         self.copy_X=copy_X
         self.fit_intercept=fit_intercept
         self.n_jobs=n_jobs
         self.normalise=normalise
-        
         # initialise attributes
         self.coef_ = np.empty((1))
         self.rank_ = 0
@@ -21,7 +19,9 @@ class LinearRegression(BaseEstimator):
         self.intercept_ = 0
     
     def __repr__(self):
-        # not implemented yet
+        """
+        copy of scikit-learn representation of a LinearRegression estimator
+        """
         return f"LinearRegression(copy_X={self.copy_X}," + \
                                 f"fit_intercept={self.fit_intercept}," + \
                                 f"n_jobs={self.n_jobs}," + \
