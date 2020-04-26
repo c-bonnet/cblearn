@@ -22,7 +22,10 @@ class LinearRegression(BaseEstimator):
     
     def __repr__(self):
         # not implemented yet
-        return f"LinearRegression(copy_X={self.copy_X}, fit_intercept={self.fit_intercept}, n_jobs={self.n_jobs}, normalise={self.normalise})"
+        return f"LinearRegression(copy_X={self.copy_X}," + \
+                                f"fit_intercept={self.fit_intercept}," + \
+                                f"n_jobs={self.n_jobs}," + \
+                                f"normalise={self.normalise})"
     
     def fit(self, X, y, sample_weight=None):
         """
