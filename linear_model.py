@@ -70,7 +70,11 @@ class LinearRegression(BaseEstimator):
         set the parameters of this estimator
         """
         for key, value in params.items():
-            setattr(self, key, value)
+            try:
+                setattr(self, key, value)
+            except Exception as ex:
+                print(ex)
+                print("Error while setting the parameters")
         return self
 
 # for testing purposes
