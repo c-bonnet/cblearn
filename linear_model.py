@@ -32,8 +32,23 @@ class LinearRegression(BaseEstimator):
         fit method that fits the parameters coef_ and intercept_ to the training set X
         """
         # no implementation of sample_weight attribute
-        self.coef_ = np.zeros(X.shape[1])
+        self.coef_ = np.zeros((X.shape[1],1))
         self.intercept_ = 0
+
+        # Batch Gradient Descent
+        learning_rate = 0.001
+        lambda_ = 0
+        num_iterations = 10000
+        m,n = X.shape
+        costs = []
+        for _ in range(num_iterations):
+            J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
+            costs.append(J)
+            grad_coef = 2/m * np.sum(X.T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
+            grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
+            self.coef_ -= learning_rate*grad_coef
+            self.intercept_ -= learning_rate*grad_intercept
+
         return self
 
     def get_params(self, deep=True):
@@ -82,3 +97,10 @@ if __name__=="__main__":
     from sklearn import linear_model 
     lin_reg_cb = LinearRegression()
     lin_reg_sk = linear_model.LinearRegression()
+    np.random.seed(16)
+    X = np.arange(10,50,2, dtype="float64")
+    X += np.random.randn(X.shape[0])
+    X = X.reshape(X.shape[0],1)
+    y = 2.5 * np.arange(10,50,2, dtype="float64") - 24
+    y += np.random.randn(y.shape[0])
+    y = y.reshape(y.shape[0],1)
