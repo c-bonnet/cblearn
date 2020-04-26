@@ -6,11 +6,8 @@ class LinearRegression(BaseEstimator):
     """
     Estimator that can compute linear regression
     """
-    def __init__(self, copy_X=True, fit_intercept=True, n_jobs=None, normalise=False):
+    def __init__(self, normalise=False):
         # intialise parameters
-        self.copy_X=copy_X
-        self.fit_intercept=fit_intercept
-        self.n_jobs=n_jobs
         self.normalise=normalise
         # initialise attributes
         self.coef_ = np.empty((1))
@@ -22,12 +19,15 @@ class LinearRegression(BaseEstimator):
         """
         copy of scikit-learn representation of a LinearRegression estimator
         """
-        return f"LinearRegression(copy_X={self.copy_X}," + \
-                                f"fit_intercept={self.fit_intercept}," + \
-                                f"n_jobs={self.n_jobs}," + \
-                                f"normalise={self.normalise})"
+        return f"LinearRegression(normalise={self.normalise})"
     
-    def fit(self, X, y, sample_weight=None):
+    def fit(self, X, y,
+            sample_weight=None,
+            optimiser="BGD",
+            learning_rate=0.001,
+            regularisation="ridge",
+            lambda_reg=0,
+            num_iterations=10000):
         """
         fit method that fits the parameters coef_ and intercept_ to the training set X
         """
@@ -36,9 +36,6 @@ class LinearRegression(BaseEstimator):
         self.intercept_ = 0
 
         # Batch Gradient Descent
-        learning_rate = 0.001
-        lambda_ = 0
-        num_iterations = 10000
         m,n = X.shape
         costs = []
         for _ in range(num_iterations):
@@ -55,11 +52,7 @@ class LinearRegression(BaseEstimator):
         """
         get parameters for this estimator
         """
-        return dict([["copy_X", self.copy_X],
-                     ["fit_intercept", self.fit_intercept],
-                     ["n_jobs", self.n_jobs],
-                     ["normalise", self.normalise],
-                     ])
+        return dict([["normalise", self.normalise]])
 
     def predict(self, X):
         """
