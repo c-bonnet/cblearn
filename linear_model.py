@@ -1,64 +1,63 @@
 import numpy as np
 
-from base import BaseEstimator
+from optimisation import BGDLinearRegression
 
-class LinearRegression(BaseEstimator):
+class LinearRegression:
     """
     Estimator that can compute linear regression
     """
-    def __init__(self, normalise=False):
+    def __init__(self,
+                 normalise=False,
+                 optimiser="BGD",
+                 learning_rate=None,
+                 regularisation="ridge",
+                 lambda_reg=0,
+                 num_iterations=1000):
         # intialise parameters
         self.normalise=normalise
-        # initialise attributes
+        self.optimiser=optimiser
+        self.learning_rate=learning_rate
+        self.regularisation=regularisation
+        self.lambda_reg=lambda_reg
+        self.num_iterations=num_iterations
+        # initialise model parameters
         self.coef_ = np.empty((1))
-        self.rank_ = 0
-        self.singular_ = np.empty((1))
         self.intercept_ = 0
+        # costs savings
+        self.costs_ = []
     
     def __repr__(self):
         """
         copy of scikit-learn representation of a LinearRegression estimator
         """
-        return f"LinearRegression(normalise={self.normalise})"
+        return f"LinearRegression(normalise={self.normalise}, " +\
+            f"optimiser={self.optimiser}, " +\
+            f"learning_rate={self.learning_rate}, " +\
+            f"regularisation={self.regularisation}, " +\
+            f"lambda_reg={self.lambda_reg}, " +\
+            f"num_iterations={self.num_iterations})"
     
-    def fit(self, X, y,
-            sample_weight=None,
-            optimiser="BGD",
-            learning_rate=0.001,
-            regularisation="ridge",
-            lambda_reg=0,
-            num_iterations=10000):
+    def fit(self, X, y):
         """
         fit method that fits the parameters coef_ and intercept_ to the training set X
         """
-        # no implementation of sample_weight attribute
         m,n = X.shape
         self.coef_ = np.zeros((n,1))
         self.intercept_ = 0
 
         # Batch Gradient Descent
-        if optimiser="BGD":
-            self.costs_ = []
-            for _ in range(num_iterations):
-                grad_coef = 2/m * np.sum(X.T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
-                grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
-                self.coef_ -= learning_rate*grad_coef
-                self.intercept_ -= learning_rate*grad_intercept
-                J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
-                self.costs_.append(J)
-                
-        # Stochastic Gradient Descent
-        if optimiser="SGD":
-            self.costs_ = []
-            for _ in range(num_iterations):
-                i = np.random.randint(m)
-                grad_coef = 2 * np.sum(X[i].T@(X@self.coef_ + self.intercept_ - y), axis=1, keepdims=True)
-                grad_intercept = 2/m * np.sum((X@self.coef_ + self.intercept_ - y))
-                self.coef_ -= learning_rate*grad_coef
-                self.intercept_ -= learning_rate*grad_intercept
-                J = 1/m * np.square(X@self.coef_ + self.intercept_ - y).sum()
-                self.costs_.append(J)
+        if self.optimiser == "BGD":
+            # learning_rate optimisation
+            if self.learning_rate is None:
+                self.learning_rate = 1
 
+            bgd = BGDLinearRegression(X, y, self.coef_, self.intercept_, self.learning_rate, self.regularisation,
+                                        self.lambda_reg, self.num_iterations)
+            bgd.batch_gradient_descent()
+            self.coef_ = bgd.coef
+            self.intercept_ = bgd.intercept
+            self.costs_ = bgd.costs
+        
         return self
 
     def get_params(self, deep=True):
@@ -84,6 +83,7 @@ class LinearRegression(BaseEstimator):
         """
         return the coefficient of determination R^2 of the prediction
         """
+        #TODO
         pass
 
     def set_params(self, **params):
@@ -97,16 +97,14 @@ class LinearRegression(BaseEstimator):
                 print(ex)
                 print("Error while setting the parameters")
         return self
+    
+    def get_model_params(self):
+        """
+        return model parameters
+        """
+        return dict([["coef", self.coef_],["intercept", self.intercept_]])
 
 # for testing purposes
 if __name__=="__main__":
-    from sklearn import linear_model 
-    lin_reg_cb = LinearRegression()
-    lin_reg_sk = linear_model.LinearRegression()
-    np.random.seed(16)
-    X = np.arange(10,50,2, dtype="float64")
-    X += np.random.randn(X.shape[0])
-    X = X.reshape(X.shape[0],1)
-    y = 2.5 * np.arange(10,50,2, dtype="float64") - 24
-    y += np.random.randn(y.shape[0])
-    y = y.reshape(y.shape[0],1)
+    import linear_model_test
+    linear_model_test.run()
