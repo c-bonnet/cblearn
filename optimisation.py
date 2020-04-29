@@ -1,11 +1,16 @@
 import numpy as np
 
 class BGDLinearRegression:
+
     """
-    compute Batch Gradient Descent algorithm to find the optimal values for linear regression
+    compute Batch Gradient Descent algorithm
+    to find the optimal values for linear regression
     """
-    def __init__(self, X, y, coef, intercept, learning_rate, regularisation,
-        lambda_reg, num_iterations):
+
+    def __init__(
+            self, X, y, coef, intercept,
+            learning_rate, regularisation,
+            lambda_reg, num_iterations):
         # initialise parameters
         self.X = X
         self.y = y
@@ -31,12 +36,23 @@ class BGDLinearRegression:
         """
         m,n = self.X.shape
         for _ in range(self.num_iterations):
-            grad_coef = 2/m * self.X.T@(self.X@self.coef + self.intercept - self.y)
-            grad_intercept = 2/m * np.sum(self.X@self.coef + self.intercept - self.y)
+            predictions = self.X@self.coef + self.intercept
+            J = 1/m * np.square(predictions - self.y).sum()
+            self.costs.append(J)
+            grad_coef = 2/m * self.X.T@(predictions - self.y)
+            grad_intercept = 2/m * np.sum(predictions - self.y)
             self.coef -= self.learning_rate*grad_coef
             self.intercept -= self.learning_rate*grad_intercept
-            J = 1/m * np.square(self.X@self.coef + self.intercept - self.y).sum()
-            self.costs.append(J)
         return self
 
-class 
+
+class BGDLearningRateOptimiser:
+
+    """
+    find the best learning rate for Batch Gradient Descent
+    to converge as fast as possible without diverging
+    """
+
+    def __init__(
+            self):
+        pass
