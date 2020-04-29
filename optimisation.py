@@ -2,16 +2,15 @@ import numpy as np
 
 class BGDLinearRegression:
 
-    """
-    compute Batch Gradient Descent algorithm
-    to find the optimal values for linear regression
+    """Compute Batch Gradient Descent algorithm
+    to find the optimal values for linear regression.
     """
 
     def __init__(
             self, X, y, coef, intercept,
             learning_rate, regularisation,
             lambda_reg, num_iterations):
-        # initialise parameters
+        # Initialise parameters
         self.X = X
         self.y = y
         self.coef = coef
@@ -20,7 +19,7 @@ class BGDLinearRegression:
         self.regularisation = regularisation
         self.lambda_reg = lambda_reg
         self.num_iterations = num_iterations
-        # keep costs
+        # Keep costs
         self.costs = []
     
     def __repr__(self):
@@ -31,15 +30,15 @@ class BGDLinearRegression:
             f"num_iterations={self.num_iterations})"
             
     def batch_gradient_descent(self):
-        """
-        compute the gradient descent on the parameters of the model
+        """Compute the gradient descent on the parameters of
+        the model
         """
         m,n = self.X.shape
         for _ in range(self.num_iterations):
             predictions = self.X@self.coef + self.intercept
             J = 1/m * np.square(predictions - self.y).sum()
             self.costs.append(J)
-            grad_coef = 2/m * self.X.T@(predictions - self.y)
+            grad_coef = 2/m * self.X.T @ (predictions-self.y)
             grad_intercept = 2/m * np.sum(predictions - self.y)
             self.coef -= self.learning_rate*grad_coef
             self.intercept -= self.learning_rate*grad_intercept
@@ -48,9 +47,8 @@ class BGDLinearRegression:
 
 class BGDLearningRateOptimiser:
 
-    """
-    find the best learning rate for Batch Gradient Descent
-    to converge as fast as possible without diverging
+    """Find the best learning rate for Batch Gradient Descent
+    to converge as fast as possible without diverging.
     """
 
     def __init__(

@@ -5,10 +5,8 @@ from sklearn import linear_model as sk_lm
 import linear_model as cb_lm
 
 def run():
-    """
-    run some tests on the LinearRegression model
-    """
-    # make some dummy data
+    """Run some tests on the LinearRegression model"""
+    # Make some dummy data
     np.random.seed(16)
     X = np.arange(10,150,2, dtype="float64")
     X += np.random.randn(X.shape[0])
@@ -16,12 +14,12 @@ def run():
     y = 2.5*np.arange(10,150,2, dtype="float64") - 24
     y += np.random.randn(y.shape[0])
     y = y.reshape(y.shape[0],1)
-    # compute linear regression
+    # Compute linear regression
     scores = [cb_lm.LinearRegression(
         num_iterations=100, learning_rate=lr/100000
         ).fit(X,y).costs_
         for lr in range(100)]
-    # plot chart
+    # Plot chart
     plt.style.use('seaborn-darkgrid')
     palette = plt.get_cmap('hsv')
     for idx, lr in enumerate(range(1,10)):
