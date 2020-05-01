@@ -21,7 +21,7 @@ class LinearRegression:
         self.num_iterations=num_iterations
         # Initialise model parameters
         self.coef = np.zeros((1, 1))
-        self.intercept = 0
+        self.intercept = np.zeros(1)
         # Costs savings
         self.costs = []
     
@@ -41,9 +41,21 @@ class LinearRegression:
         """Fit method that fits the parameters coef and intercept
         to the training set X
         """
+        # Handle exceptions
+        if X.shape[0] != y.shape[0]:
+            raise ValueError(
+                "X and y do not have the same number of instances.")
+        if X.ndim != 2:
+            raise ValueError(
+                f"Expected 2D array, got {X.ndim}D array instead.\n" +\
+                "Please reshape your data either using "+\
+                "array.reshape(-1, n) or array.reshape(1, -1) if it " +\
+                "contains a single sample.")
+        if y.ndim != 2:
+            y = y.reshape(-1, 1)
         (m, n) = X.shape
-        self.coef = np.zeros((n, 1))
-        self.intercept = 0
+        self.coef = np.zeros((n, y.shape[1]))
+        self.intercept = np.zeros((1, y.shape[1]))
 
         # Batch Gradient Descent
         if self.optimiser == "BGD":
@@ -133,8 +145,14 @@ class LinearRegression:
                 + upp_part/poly_parts * (upper_bound-lower_bound)
                 )
             lower_bound, upper_bound = new_lower_bound, new_upper_bound
-            relative_diff = (upper_bound-lower_bound) / lower_bound
-            if relative_diff < rel_threshold:
+            if lower_bound == 0:
+                rel_diff = np.inf
+            else:
+                rel_diff = np.float(
+                    (upper_bound-lower_bound)
+                    / lower_bound
+                    )
+            if rel_diff < rel_threshold:
                 break
         self.learning_rate = lower_bound
         return self
@@ -152,7 +170,7 @@ class LinearRegression:
             J = 1/m * np.square(predictions - y).sum()
             self.costs.append(J)
             grad_coef = 2/m * X.T @ (predictions-y)
-            grad_intercept = 2/m * np.sum(predictions - y)
+            grad_intercept = 2/m * np.sum(predictions - y, axis=0)
             self.coef -= self.learning_rate*grad_coef
             self.intercept -= self.learning_rate*grad_intercept
         return self

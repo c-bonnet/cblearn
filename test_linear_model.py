@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn import datasets
 from sklearn import linear_model as sk_lm 
 
 import linear_model as cb_lm
@@ -47,6 +48,35 @@ def test_learning_rate():
     lin_reg = cb_lm.LinearRegression()
     lin_reg.fit(X,y)
     return X, y, lin_reg
+
+def test_diabetes():
+    (X, y) = datasets.load_diabetes(return_X_y=True)
+    lin_reg_cb = cb_lm.LinearRegression(num_iterations=200000)
+    lin_reg_cb.fit(X, y)
+    print("coef")
+    print(lin_reg_cb.coef.T)
+    print("intercept")
+    print(lin_reg_cb.intercept)
+    lin_reg_sk = sk_lm.LinearRegression()
+    lin_reg_sk.fit(X, y)
+    print("coef")
+    print(lin_reg_sk.coef_)
+    print("intercept")
+    print(lin_reg_sk.intercept_)
+    # Multivalue regression
+    y = np.concatenate((y.reshape(-1,1), y.reshape(-1,1)), axis=1)
+    lin_reg_cb = cb_lm.LinearRegression(num_iterations=200000)
+    lin_reg_cb.fit(X, y)
+    print("coef")
+    print(lin_reg_cb.coef.T)
+    print("intercept")
+    print(lin_reg_cb.intercept)
+    lin_reg_sk = sk_lm.LinearRegression()
+    lin_reg_sk.fit(X, y)
+    print("coef")
+    print(lin_reg_sk.coef_)
+    print("intercept")
+    print(lin_reg_sk.intercept_)
 
 # For testing purposes
 # if __name__=="__main__":
