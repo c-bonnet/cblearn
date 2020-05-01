@@ -167,9 +167,16 @@ class LinearRegression:
         (m, n) = X.shape
         for _ in range(num_iterations):
             predictions = X@self.coef + self.intercept
+            # Mean Squared Error
             J = 1/m * np.square(predictions - y).sum()
+            # Regularisation term (intercept is not regularised)
+            if self.regularisation == "ridge":
+                J += self.lambda_reg/m * np.square(self.coef).sum()
             self.costs.append(J)
             grad_coef = 2/m * X.T @ (predictions-y)
+            # Regularisation term
+            if self.regularisation == "ridge":
+                grad_coef += 2*self.lambda_reg/m * self.coef
             grad_intercept = 2/m * np.sum(predictions - y, axis=0)
             self.coef -= self.learning_rate*grad_coef
             self.intercept -= self.learning_rate*grad_intercept

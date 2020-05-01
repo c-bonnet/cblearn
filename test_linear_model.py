@@ -49,34 +49,52 @@ def test_learning_rate():
     lin_reg.fit(X,y)
     return X, y, lin_reg
 
-def test_diabetes():
+def test_diabetes(regularisation=False, multivalue=True):
     (X, y) = datasets.load_diabetes(return_X_y=True)
-    lin_reg_cb = cb_lm.LinearRegression(num_iterations=200000)
+    y_2 = np.concatenate((y.reshape(-1,1), y.reshape(-1,1)), axis=1)
+    if not regularisation:
+        lin_reg_cb = cb_lm.LinearRegression(num_iterations=200000)
+    if regularisation:
+        lin_reg_cb = cb_lm.LinearRegression(
+            lambda_reg=1 ,num_iterations=200000
+            )
     lin_reg_cb.fit(X, y)
     print("coef")
     print(lin_reg_cb.coef.T)
     print("intercept")
     print(lin_reg_cb.intercept)
-    lin_reg_sk = sk_lm.LinearRegression()
+    if not regularisation:
+        lin_reg_sk = sk_lm.LinearRegression()
+    if regularisation:
+        lin_reg_sk = sk_lm.Ridge(alpha=1)
     lin_reg_sk.fit(X, y)
     print("coef")
     print(lin_reg_sk.coef_)
     print("intercept")
     print(lin_reg_sk.intercept_)
     # Multivalue regression
-    y = np.concatenate((y.reshape(-1,1), y.reshape(-1,1)), axis=1)
-    lin_reg_cb = cb_lm.LinearRegression(num_iterations=200000)
-    lin_reg_cb.fit(X, y)
-    print("coef")
-    print(lin_reg_cb.coef.T)
-    print("intercept")
-    print(lin_reg_cb.intercept)
-    lin_reg_sk = sk_lm.LinearRegression()
-    lin_reg_sk.fit(X, y)
-    print("coef")
-    print(lin_reg_sk.coef_)
-    print("intercept")
-    print(lin_reg_sk.intercept_)
+    if multivalue:
+        if not regularisation:
+            lin_reg_cb = cb_lm.LinearRegression(num_iterations=400000)
+        if regularisation:
+            lin_reg_cb = cb_lm.LinearRegression(
+                lambda_reg=1 ,num_iterations=400000
+                )
+        lin_reg_cb.fit(X, y_2)
+        print("coef")
+        print(lin_reg_cb.coef.T)
+        print("intercept")
+        print(lin_reg_cb.intercept)
+        if not regularisation:
+            lin_reg_sk = sk_lm.LinearRegression()
+        if regularisation:
+            lin_reg_sk = sk_lm.Ridge(alpha=1)
+        lin_reg_sk.fit(X, y_2)
+        print("coef")
+        print(lin_reg_sk.coef_)
+        print("intercept")
+        print(lin_reg_sk.intercept_)
+        
 
 # For testing purposes
 # if __name__=="__main__":
