@@ -1,2 +1,2 @@
 # cblearn
-Implementation of sklearn library
+Implementation of classic Machine Learning algorithms. Inspired by Scikit-Learn library.
